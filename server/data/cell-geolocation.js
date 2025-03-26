@@ -85,9 +85,16 @@ http.createServer(function(req, res) {
           res.end(JSON.stringify(err));
           return;
         } else {
-          numOpenCellIdResponses++;
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(row));
+          if (row === "") { 
+            numOpenCellIdResponses++;
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(row));
+          } else {
+	    console.error('nothing found');
+            res.writeHead(500);
+            res.end(JSON.stringify("nothing found"));
+            return;
+	  }
         }
       }
     );
