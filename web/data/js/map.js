@@ -130,7 +130,7 @@ function goToCell(e) {
             infoBox.innerHTML = "Invalid Request. Please ensure that correct mcc, mnc, lac (tac) and cid values are provided.";
             hideInfoBox(5000);
         } else if (cell === "nothing found") {
-	    infoBox.innreHTML = "Nothing Found. Please ensure that correct mcc, mnc, lac (tac) and cid values are provided.";
+	    infoBox.innerHTML = "Nothing Found. Please ensure that correct mcc, mnc, lac (tac) and cid values are provided.";
 	    hideInfoBox(5000);
         } else if (cell === false) {
             infoBox.innerHTML = "Cell not found";

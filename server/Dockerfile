@@ -5,6 +5,7 @@ EXPOSE 5265
 RUN apk update && apk add sqlite sqlite-dev openssh gcc musl-dev npm nodejs
 
 WORKDIR /opt/opencellid
+RUN echo "V1.0"
 
 RUN wget -O extension-functions.c https://www.sqlite.org/contrib/download/extension-functions.c?get=25 \ 
  && gcc -fPIC -lm -shared extension-functions.c -o libsqlitefunctions.so
