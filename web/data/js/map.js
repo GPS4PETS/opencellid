@@ -132,6 +132,9 @@ function goToCell(e) {
         } else if (cell === "nothing found") {
 	    infoBox.innerHTML = "Nothing Found. Please ensure that correct mcc, mnc, lac (tac) and cid values are provided.";
 	    hideInfoBox(5000);
+            if (map.hasLayer(theMarker)) {                                                                                 
+              map.removeLayer(theMarker);                                                                            
+            }
         } else if (cell === false) {
             infoBox.innerHTML = "Cell not found";
             hideInfoBox(5000);
