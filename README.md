@@ -3,8 +3,8 @@
 OpenCellID Server and Web interface
 
 # Install
-just import the docker-compose.yml to portainer
-Add this ENV to the config:
+just import the docker-compose.yml and .env files to portainer
+Change the ENV variable to your API-KEY:
 
     OPENCELLID_API_KEY = YOUROPENCELLIDAPIKEY
 
