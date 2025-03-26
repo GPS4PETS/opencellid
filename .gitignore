@@ -1,0 +1,8 @@
+server/node_modules/
+server/sqlite/*
+server/package-lock.json
+server/*.c
+server/*.csv
+server/*.csv.gz
+server/*.sqlite
+server/*.so

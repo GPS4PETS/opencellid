@@ -1,0 +1,15 @@
+[Unit]
+Description=cell-geolocation
+
+[Service]
+ExecStart=/opt/cell-geolocation/./cell-geolocation.js
+Restart=always
+User=root
+Group=root
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=OPENCELLID_API_KEY=<YOUR_ID>
+Environment=NODE_ENV=production
+WorkingDirectory=/opt/cell-geolocation
+
+[Install]
+WantedBy=multi-user.target

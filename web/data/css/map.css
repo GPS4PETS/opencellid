@@ -1,0 +1,55 @@
+.leaflet-control-layers-toggle {
+    height: 26px;
+    width: 27px;
+    background-size:20px;
+}
+
+.cellsearch-label {
+    font-size: 11px;
+    width:40px;
+    display:inline-block;
+}
+
+#map .leaflet-control-layers-toggle {
+    width: 32px;
+    height: 32px;
+}
+.cellsearch-input {
+    width: 60px;
+    font-size: 11px !important;
+    height: 14px;
+}
+
+.cellsearch-line {
+    padding: 0.1em;
+}
+
+#map .legend {
+    margin-left: 18px;
+    background: rgba(255, 255, 255, .85);
+}
+
+.search-cell-control {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;    
+    background: rgba(255, 255, 255, .85);
+    border-radius: 4px;
+    /* box-shadow: 0 1px 7px rgba(0, 0, 0, 0.65); */
+    padding: 0.5em;
+}
+
+.awesome-marker i {
+    font-style: normal;
+}
+
+@media (max-width: 640px) {
+    .leaflet-bottom .leaflet-control-scale {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .leaflet-bottom .leaflet-control-scale {
+        margin-bottom: 40px;
+    }
+}

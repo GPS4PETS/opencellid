@@ -1,0 +1,63 @@
+.leaflet-control-locate a {
+  cursor: pointer;
+}
+.leaflet-control-locate a .leaflet-control-locate-location-arrow {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 1px;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 6.4c-1.6 0-1.6 1.6-1.6 1.6v.2c-3.1.6-5.6 3.1-6.2 6.2H8s-1.6 0-1.6 1.6S8 17.6 8 17.6h.2c.6 3.1 3.1 5.6 6.2 6.2v.2s0 1.6 1.6 1.6 1.6-1.6 1.6-1.6v-.2c3.1-.6 5.6-3.1 6.2-6.2h.2s1.6 0 1.6-1.6-1.6-1.6-1.6-1.6h-.2c-.6-3.1-3.1-5.6-6.2-6.2V8s0-1.6-1.6-1.6zm0 4c3.1 0 5.6 2.5 5.6 5.6s-2.5 5.6-5.6 5.6-5.6-2.5-5.6-5.6 2.5-5.6 5.6-5.6z"/><circle cx="16" cy="16" r="3.2"/></svg>');
+}
+.leaflet-control-locate a .leaflet-control-locate-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin: 7px;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="black" d="M304 48a48 48 0 1 1-96 0 48 48 0 0 1 96 0zm-48 368a48 48 0 1 0 0 96 48 48 0 0 0 0-96zm208-208a48 48 0 1 0 0 96 48 48 0 0 0 0-96zM96 256a48 48 0 1 0-96 0 48 48 0 0 0 96 0zm13 99a48 48 0 1 0 0 96 48 48 0 0 0 0-96zm294 0a48 48 0 1 0 0 96 48 48 0 0 0 0-96zM109 61a48 48 0 1 0 0 96 48 48 0 0 0 0-96z"/></svg>');
+  animation: leaflet-control-locate-spin 2s linear infinite;
+}
+.leaflet-control-locate.active a .leaflet-control-locate-location-arrow {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="rgb(32, 116, 182)" d="M16 6.4c-1.6 0-1.6 1.6-1.6 1.6v.2c-3.1.6-5.6 3.1-6.2 6.2H8s-1.6 0-1.6 1.6S8 17.6 8 17.6h.2c.6 3.1 3.1 5.6 6.2 6.2v.2s0 1.6 1.6 1.6 1.6-1.6 1.6-1.6v-.2c3.1-.6 5.6-3.1 6.2-6.2h.2s1.6 0 1.6-1.6-1.6-1.6-1.6-1.6h-.2c-.6-3.1-3.1-5.6-6.2-6.2V8s0-1.6-1.6-1.6zm0 4c3.1 0 5.6 2.5 5.6 5.6s-2.5 5.6-5.6 5.6-5.6-2.5-5.6-5.6 2.5-5.6 5.6-5.6z"/><circle fill="rgb(32, 116, 182)" cx="16" cy="16" r="3.2"/></svg>');
+}
+.leaflet-control-locate.following a .leaflet-control-locate-location-arrow {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="rgb(252, 132, 40)" d="M16 6.4c-1.6 0-1.6 1.6-1.6 1.6v.2c-3.1.6-5.6 3.1-6.2 6.2H8s-1.6 0-1.6 1.6S8 17.6 8 17.6h.2c.6 3.1 3.1 5.6 6.2 6.2v.2s0 1.6 1.6 1.6 1.6-1.6 1.6-1.6v-.2c3.1-.6 5.6-3.1 6.2-6.2h.2s1.6 0 1.6-1.6-1.6-1.6-1.6-1.6h-.2c-.6-3.1-3.1-5.6-6.2-6.2V8s0-1.6-1.6-1.6zm0 4c3.1 0 5.6 2.5 5.6 5.6s-2.5 5.6-5.6 5.6-5.6-2.5-5.6-5.6 2.5-5.6 5.6-5.6z"/><circle fill="rgb(252, 132, 40)" cx="16" cy="16" r="3.2"/></svg>');
+}
+
+.leaflet-touch .leaflet-bar .leaflet-locate-text-active {
+  width: 100%;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 10px;
+}
+.leaflet-touch .leaflet-bar .leaflet-locate-text-active .leaflet-locate-icon {
+  padding: 0 5px 0 0;
+}
+
+.leaflet-control-locate-location circle {
+  animation: leaflet-control-locate-throb 4s ease infinite;
+}
+
+@keyframes leaflet-control-locate-throb {
+  0% {
+    stroke-width: 1;
+  }
+  50% {
+    stroke-width: 3;
+    transform: scale(0.8, 0.8);
+  }
+  100% {
+    stroke-width: 1;
+  }
+}
+@keyframes leaflet-control-locate-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/*# sourceMappingURL=L.Control.Locate.css.map */
