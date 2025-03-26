@@ -92,7 +92,7 @@ http.createServer(function(req, res) {
           } else {
 	    console.error('nothing found');
             res.writeHead(200);
-            res.end('nothing found');
+            res.end(JSON.stringify('nothing found'));
             return;
 	  }
         }
