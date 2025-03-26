@@ -6,11 +6,7 @@ const path = require('path');
 const Url = require('url');
 const util = require('util');
 const fs = require('fs');
-const request = require(path.join(__dirname, 'request.js'));
-const mlsDb = new sqlite3.Database(path.join(__dirname, 'sqlite/mls_cells.sqlite'), sqlite3.OPEN_READONLY);
-const ociDb = new sqlite3.Database(path.join(__dirname, 'sqlite/oci_cells.sqlite'), sqlite3.OPEN_READONLY);
-const uwlDb = new sqlite3.Database(path.join(__dirname, 'sqlite/uwl_cells.sqlite'), sqlite3.OPEN_READWRITE);
-const ownDb = new sqlite3.Database(path.join(__dirname, 'sqlite/own_cells.sqlite'), sqlite3.OPEN_READWRITE);
+const ociDb = new sqlite3.Database('/opt/opencellid/sqlite/oci_cells.sqlite', sqlite3.OPEN_READONLY);
 
 const approximatedRange = 2147483648;
 
@@ -18,8 +14,8 @@ const defaultLatitude = 46.909009;
 const defaultLongitude = 7.360584;
 const defaultRange = 4294967295;
 
-const mlsDbMtime = new Date(fs.statSync(path.join(__dirname, 'sqlite/oci_cells.sqlite')).mtime).getTime()/1000|0;
-console.log('Main database (opencellid) last modifed at:', mlsDbMtime);
+const ociDbMtime = new Date(fs.statSync('/opt/opencellid/sqlite/oci_cells.sqlite').mtime).getTime()/1000|0;
+console.log('Main database (opencellid) last modifed at:', ociDbMtime);
 
 const OPENCELLID_API_KEY = process.env.OPENCELLID_API_KEY;
 if (typeof OPENCELLID_API_KEY != 'undefined') {
@@ -77,281 +73,27 @@ http.createServer(function(req, res) {
     }
 
     numValidRequests++;
-    // -1- query Mozilla Location Service database
-    mlsDb.get('SELECT lat, lon, range FROM cells WHERE mcc = ? AND mnc = ? AND lac = ? AND cellid = ?', {
+    ociDb.get('SELECT lat, lon, range FROM cells WHERE mcc = ? AND mnc = ? AND lac = ? AND cellid = ?', {
       1: url.query.mcc,
       2: url.query.mnc,
       3: url.query.lac,
       4: url.query.cell_id
-    }, function(err, row) {
-      if (err) {
-        console.error('Error querying Mozilla Location Service database');
-        res.writeHead(500);
-        res.end(JSON.stringify(err));
-        return;
+      }, function(err, row) {
+        if (err) {
+          console.error('Error querying OpenCellId database');
+          res.writeHead(500);
+          res.end(JSON.stringify(err));
+          return;
+        } else {
+          numOpenCellIdResponses++;
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(row));
+        }
       }
-
-      // -2- if Mozilla Location Service database did not have a match, query OpenCellId database
-      if (typeof row == 'undefined') {
-        ociDb.get('SELECT lat, lon, range FROM cells WHERE mcc = ? AND mnc = ? AND lac = ? AND cellid = ?', {
-          1: url.query.mcc,
-          2: url.query.mnc,
-          3: url.query.lac,
-          4: url.query.cell_id
-        }, function(err, row) {
-          if (err) {
-            console.error('Error querying OpenCellId database');
-            res.writeHead(500);
-            res.end(JSON.stringify(err));
-            return;
-          }
-
-          // -3- if OpenCellId database did not have a match, query OpenCellId cache database
-          if (typeof row == 'undefined') {
-            uwlDb.get('SELECT lat, lon, range FROM cells WHERE mcc = ? AND mnc = ? AND lac = ? AND cellid = ?', {
-              1: url.query.mcc,
-              2: url.query.mnc,
-              3: url.query.lac,
-              4: url.query.cell_id
-            }, function(err, row) {
-              if (err) {
-                console.error('Error querying OpenCellId cache database');
-                res.writeHead(500);
-                res.end(JSON.stringify(err));
-                return;
-              }
-
-              // -4- if OpenCellId cache database did not have a match, query own cache database
-              if (typeof row == 'undefined') {
-                ownDb.get('SELECT lat, lon, range FROM cells WHERE mcc = ? AND mnc = ? AND lac = ? AND cellid = ?', {
-                  1: url.query.mcc,
-                  2: url.query.mnc,
-                  3: url.query.lac,
-                  4: url.query.cell_id
-                }, function(err, row) {
-                  if (err) {
-                    console.error('Error querying own cache database');
-                    res.writeHead(500);
-                    res.end(JSON.stringify(err));
-                    return;
-                  }
-
-                  // -5- if OpenCellId cache database did not have a match, query OpenCellId online service
-                  if (typeof row == 'undefined') {
-                    request.oci(url.query.mcc,url.query.mnc,url.query.lac,url.query.cell_id, OPENCELLID_API_KEY).then(coords => {
-                      if (coords.statusCode == 200) { // ok
-                        uwlDb.run('INSERT INTO cells (mcc, mnc, lac, cellid, lat, lon, range, created_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?)', {
-                          1: url.query.mcc,
-                          2: url.query.mnc,
-                          3: url.query.lac,
-                          4: url.query.cell_id,
-                          5: coords.lat,
-                          6: coords.lon,
-                          7: coords.range,
-                          8: Math.floor(new Date().getTime()/1000|0),
-                          9: Math.floor(new Date().getTime()/1000|0)
-                        }, function(err, result) {
-                          if (err) {
-                            console.error('Error inserting queried location into OpenCellId cache database');
-                            res.writeHead(500);
-                            res.end(JSON.stringify(err));
-                            return;
-                          }
-                          console.log(util.format('Req#%d M#%d O#%d U#%d Own#%d/%d A#%d D#%d: Queried OpenCellId (B#%d) for %s: %s, %s, %s, %s -> %s, %s, %s',
-                                      numValidRequests, numMozillaResponses, numOpenCellIdResponses, numUnwiredLabsResponses,
-                                      numApproximatedResponses, numDefaultResponses, numApproximatedCells, numUnknownCells,
-                                      coords.balance, ip,
-                                      url.query.mcc, url.query.mnc, url.query.lac, url.query.cell_id,
-                                      coords.lat, coords.lon, coords.range));
-                          numUnwiredLabsResponses++;
-                          res.writeHead(200, { 'Content-Type': 'application/json' });
-                          res.end(JSON.stringify({"lat":coords.lat,"lon":coords.lon,"range":coords.range}));
-                          return;
-                        });
-                      }
-                      else if (coords.statusCode == 404) { // cell not found
-                        // -6a- if OpenCellId did not have a match, query OpenCellId database and calculate approximate location
-                        ociDb.get(CENTER_OF_CELLS_QUERY, {
-                          1: url.query.mcc,
-                          2: url.query.mnc,
-                          3: url.query.lac
-                        }, function(err, row) {
-                          if (err) {
-                            console.error('Error querying OpenCellId database');
-                            res.writeHead(500);
-                            res.end(JSON.stringify(err));
-                            return;
-                          } else if ((null != row.lat) && (null != row.lon)) {
-                            numApproximatedCells++;
-                            ownDb.run('INSERT INTO cells (mcc, mnc, lac, cellid, lat, lon, range, created_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?)', {
-                              1: url.query.mcc,
-                              2: url.query.mnc,
-                              3: url.query.lac,
-                              4: url.query.cell_id,
-                              5: row.lat,
-                              6: row.lon,
-                              7: approximatedRange,
-                              8: Math.floor(new Date().getTime()/1000|0),
-                              9: Math.floor(new Date().getTime()/1000|0)
-                            }, function(err, result) {
-                              if (err) {
-                                console.error('Error inserting default location into own cache database');
-                                res.writeHead(500);
-                                res.end(JSON.stringify(err));
-                                return;
-                              }
-                              console.log(util.format('Req#%d M#%d O#%d U#%d Own#%d/%d A#%d D#%d: Replying with approximated location to %s due to %d: %s, %s, %s, %s -> %s, %s, %s',
-                                          numValidRequests, numMozillaResponses, numOpenCellIdResponses, numUnwiredLabsResponses,
-                                          numApproximatedResponses, numDefaultResponses, numApproximatedCells, numUnknownCells,
-                                          ip, coords.statusCode,
-                                          url.query.mcc, url.query.mnc, url.query.lac, url.query.cell_id,
-                                                     row.lat,row.lon,approximatedRange));
-                              numApproximatedResponses++;
-                              res.writeHead(200, { 'Content-Type': 'application/json' });
-                              res.end(JSON.stringify({"lat":row.lat,"lon":row.lon,"range":approximatedRange}));
-                              return;
-                            });
-                          } else {
-                            // -7a- use default location if approximate location could not be calculated
-                            numUnknownCells++;
-                            ownDb.run('INSERT INTO cells (mcc, mnc, lac, cellid, lat, lon, range, created_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?)', {
-                              1: url.query.mcc,
-                              2: url.query.mnc,
-                              3: url.query.lac,
-                              4: url.query.cell_id,
-                              5: defaultLatitude,
-                              6: defaultLongitude,
-                              7: defaultRange,
-                              8: Math.floor(new Date().getTime()/1000|0),
-                              9: Math.floor(new Date().getTime()/1000|0)
-                            }, function(err, result) {
-                              if (err) {
-                                console.error('Error inserting default location into own cache database');
-                                res.writeHead(500);
-                                res.end(JSON.stringify(err));
-                                return;
-                              }
-                              console.log(util.format('Req#%d M#%d O#%d U#%d Own#%d/%d A#%d D#%d: Replying with default location to %s due to %d: %s, %s, %s, %s',
-                                          numValidRequests, numMozillaResponses, numOpenCellIdResponses, numUnwiredLabsResponses,
-                                          numApproximatedResponses, numDefaultResponses, numApproximatedCells, numUnknownCells,
-                                          ip, coords.statusCode,
-                                          url.query.mcc, url.query.mnc, url.query.lac, url.query.cell_id));
-                              numDefaultResponses++;
-                              res.writeHead(404, { 'Content-Type': 'application/json' });
-                              res.end(JSON.stringify({"lat":defaultLatitude,"lon":defaultLongitude,"range":defaultRange}));
-                              return;
-                            });
-                          }
-                        });
-                      } else if (coords.statusCode == 429) { // daily limit of UnwiredLabs requests exceeded
-                        // -6b- if OpenCellId did not have a match, query OpenCellId database and calculate approximate location
-                        ociDb.get(CENTER_OF_CELLS_QUERY, {
-                          1: url.query.mcc,
-                          2: url.query.mnc,
-                          3: url.query.lac
-                        }, function(err, row) {
-                          if (err) {
-                            console.error('Error querying OpenCellId database');
-                            res.writeHead(500);
-                            res.end(JSON.stringify(err));
-                            return;
-                          } else if ((null != row.lat) && (null != row.lon)) {
-                            numApproximatedCells++;
-                            ownDb.run('INSERT INTO cells (mcc, mnc, lac, cellid, lat, lon, range) VALUES(?,?,?,?,?,?,?)', {
-                              1: url.query.mcc,
-                              2: url.query.mnc,
-                              3: url.query.lac,
-                              4: url.query.cell_id,
-                              5: row.lat,
-                              6: row.lon,
-                              7: approximatedRange
-                            }, function(err, result) {
-                              if (err) {
-                                console.error('Error inserting default location into own cache database');
-                                res.writeHead(500);
-                                res.end(JSON.stringify(err));
-                                return;
-                              }
-                              console.log(util.format('Req#%d M#%d O#%d U#%d Own#%d/%d A#%d D#%d: Replying with approximated location to %s due to %d: %s, %s, %s, %s -> %s, %s, %s',
-                                          numValidRequests, numMozillaResponses, numOpenCellIdResponses, numUnwiredLabsResponses,
-                                          numApproximatedResponses, numDefaultResponses, numApproximatedCells, numUnknownCells,
-                                          ip, coords.statusCode,
-                                          url.query.mcc, url.query.mnc, url.query.lac, url.query.cell_id,
-                                          row.lat, row.lon, approximatedRange));
-                              numApproximatedResponses++;
-                              res.writeHead(200, { 'Content-Type': 'application/json' });
-                              res.end(JSON.stringify({"lat":row.lat,"lon":row.lon,"range":approximatedRange}));
-                              return;
-                            });
-                          } else {
-                            // -7b- use default location if approximate location could not be calculated
-                            numUnknownCells++;
-                            ownDb.run('INSERT INTO cells (mcc, mnc, lac, cellid, lat, lon, range) VALUES(?,?,?,?,?,?,?)', {
-                              1: url.query.mcc,
-                              2: url.query.mnc,
-                              3: url.query.lac,
-                              4: url.query.cell_id,
-                              5: defaultLatitude,
-                              6: defaultLongitude,
-                              7: defaultRange
-                            }, function(err, result) {
-                              if (err) {
-                                console.error('Error inserting default location into own cache database');
-                                res.writeHead(500);
-                                res.end(JSON.stringify(err));
-                                return;
-                              }
-                              console.log(util.format('Req#%d M#%d O#%d U#%d Own#%d/%d A#%d D#%d: Replying with default location to %s due to %d: %s, %s, %s, %s',
-                                          numValidRequests, numMozillaResponses, numOpenCellIdResponses, numUnwiredLabsResponses,
-                                          numApproximatedResponses, numDefaultResponses, numApproximatedCells, numUnknownCells,
-                                          ip, coords.statusCode,
-                                          url.query.mcc, url.query.mnc, url.query.lac, url.query.cell_id));
-                              numDefaultResponses++;
-                              res.writeHead(404, { 'Content-Type': 'application/json' });
-                              res.end(JSON.stringify({"lat":defaultLatitude,"lon":defaultLongitude,"range":defaultRange}));
-                              return;
-                            });
-                          }
-                        });
-                      }
-                    }).catch(err => {
-                      console.warn(err);
-                      res.writeHead(500);
-                      res.end(JSON.stringify(err));
-                      return;
-                    });
-                  } else {
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    if (approximatedRange == row.range) {
-                      numApproximatedResponses++;
-                      res.end(JSON.stringify(row));
-                    } else {
-                      numDefaultResponses++;
-                      res.end(JSON.stringify(row));
-                    }
-                  }
-                });
-              } else {
-                numUnwiredLabsResponses++;
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(row));
-              }
-            });
-          } else {
-            numOpenCellIdResponses++;
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(row));
-          }
-        });
-      } else {
-        numMozillaResponses++;
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(row));
-      }
-    });
+    );
   } else if (req.method === 'GET' && (url.pathname === '/version' || url.pathname === '/api/version/')) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(mlsDbMtime.toString());
+      res.end(ociDbMtime.toString());
   } else {
     res.writeHead(404);
     res.end('Nothing to see here');
@@ -365,10 +107,7 @@ process.on('SIGQUIT', shutdown);
 process.on('SIGTERM', shutdown);
 process.on('SIGTSTP', shutdown);
 function shutdown() {
-  mlsDb.close();
   ociDb.close();
-  uwlDb.close();
-  ownDb.close();
   console.log("");
   console.log("Closed databases and exiting now");
   process.exit(0)

@@ -1,9 +1,8 @@
 const sqlite3 = require('sqlite3');
-const path = require('path');
 const util = require('util');
-const mlsDb = new sqlite3.Database(path.join(__dirname, 'mls_cells.sqlite'), sqlite3.OPEN_READONLY);
-const ociDb = new sqlite3.Database(path.join(__dirname, 'oci_cells.sqlite'), sqlite3.OPEN_READONLY);
-const uwlDb = new sqlite3.Database(path.join(__dirname, 'uwl_cells.sqlite'), sqlite3.OPEN_READWRITE);
+const mlsDb = new sqlite3.Database('/opt/opencellid/sqlite/mls_cells.sqlite', sqlite3.OPEN_READONLY);
+const ociDb = new sqlite3.Database('/opt/opencellid/sqlite/oci_cells.sqlite', sqlite3.OPEN_READONLY);
+const uwlDb = new sqlite3.Database('/opt/opencellid/sqlite/uwl_cells.sqlite', sqlite3.OPEN_READWRITE);
 
 var numProcessedEntries = 0;
 
