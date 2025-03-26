@@ -19,5 +19,5 @@ RUN npm install
 
 CMD ["cat /opt/opencellid/schema.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite"]
 
-CMD ["tail", "-f", "/dev/null"]
-#CMD ["/usr/bin/env", "node", "cell-geolocation.js"]
+#CMD ["tail", "-f", "/dev/null"]
+CMD ["/usr/bin/env", "node", "cell-geolocation.js"]

@@ -129,6 +129,9 @@ function goToCell(e) {
         } else if (cell === "Invalid Request") {
             infoBox.innerHTML = "Invalid Request. Please ensure that correct mcc, mnc, lac (tac) and cid values are provided.";
             hideInfoBox(5000);
+        } else if (cell === "nothing found") {
+	    infoBox.innreHTML = "Nothing Found. Please ensure that correct mcc, mnc, lac (tac) and cid values are provided.";
+	    hideInfoBox(5000);
         } else if (cell === false) {
             infoBox.innerHTML = "Cell not found";
             hideInfoBox(5000);
@@ -139,7 +142,8 @@ function goToCell(e) {
 // Hide the infoBox after the seconds provided in $duration
 function hideInfoBox(duration) {
     setTimeout(function() {
-        //infoBox.innerHTML = 'System OK';
+        infoBox.innerHTML = 'System OK';
+        $( "#infoBox" ).load( "update.html" );
     }, duration);
 }
 

@@ -113,6 +113,8 @@ function includeHTML() {
       <div id="map"></div>
     </div>
 
+    <div id="infoBox" class="infoBox"> &nbsp; last Update: <span id="update" style="display:inline;" w3-include-html="update.html">---</span></div>
+
 <!-- geocoding plugin -->        
 <script src="/bower_components/leaflet/dist/leaflet.js"></script>
 <script src="/bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
@@ -124,8 +126,6 @@ function includeHTML() {
 <script src="/bower_components/leaflet-info-control/InfoControl.js"></script>
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 <script src="/js/map.js"></script>
-
-    <div id="infoBox" class="infoBox"> &nbsp; last Update: <span id="update" style="display:inline;" w3-include-html="update.html">---</span></div>
 
     <div class="footer">
       <div class="footer-child" style="text-align:left;">

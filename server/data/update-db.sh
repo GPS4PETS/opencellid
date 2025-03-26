@@ -9,7 +9,8 @@ wget -O /opt/opencellid/oci_cells.csv.gz "https://download.unwiredlabs.com/ocid/
 echo "UNPACK"
 gzip -d /opt/opencellid/oci_cells.csv.gz 
 
-date > /opt/opencellid/update.html
+echo "last update: " > /opt/opencellid/update.html
+date >> /opt/opencellid/update.html
 
 date
 echo "CAT IMPORT"
