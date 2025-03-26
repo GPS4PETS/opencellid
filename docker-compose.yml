@@ -1,0 +1,25 @@
+services:
+  opencellid-server:
+    build: 
+      context: /opt/opencellid/server/
+      dockerfile: /opt/opencellid/server/Dockerfile
+    image: gps4pets/opencellid-server
+    container_name: opencellid-server
+    restart: always
+    volumes:
+      - /opt/opencellid/server/sqlite:/opt/opencellid/sqlite
+    ports:
+      - 5265:5265
+    networks:
+      - n7m_osm_bridge
+  opencellid-web:
+    build: 
+      context: /opt/opencellid/web/
+      dockerfile: /opt/opencellid/web/Dockerfile
+    image: gps4pets/opencellid-web
+    container_name: opencellid-web
+    restart: always
+    ports:
+      - 8585:80
+    networks:
+      - n7m_osm_bridge
