@@ -1,1 +1,1 @@
-systemctl start cell-geolocation.service
+/usr/bin/env node cell-geolocation.js

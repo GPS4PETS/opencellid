@@ -1,7 +1,7 @@
-cd  /opt/opencellid/
+cd /opt/opencellid/
 
-rm  /opt/opencellid/oci_cells.csv.gz
-rm  /opt/opencellid/oci_cells.csv
+rm /opt/opencellid/oci_cells.csv.gz
+rm /opt/opencellid/oci_cells.csv
 
 date
 echo "DOWNLOAD FILE"
@@ -13,10 +13,10 @@ date > /opt/opencellid/update.html
 
 date
 echo "CAT IMPORT"
-cat  /opt/opencellid/oci_import.sql | sqlite3  /opt/opencellid/sqlite/oci_cells.sqlite
+cat /opt/opencellid/oci_import.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite
 date
 echo "CAT CLEANUP"
-cat  /opt/opencellid/oci_cells-cleanup.sql | sqlite3  /opt/opencellid/sqlite/oci_cells.sqlite
+cat /opt/opencellid/oci_cells-cleanup.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite
 
 date
 echo "SCP UPDATE.HTML"

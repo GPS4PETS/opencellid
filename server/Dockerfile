@@ -1,5 +1,7 @@
 FROM alpine:latest
 
+EXPOSE 5265
+
 RUN apk update && apk add sqlite sqlite-dev openssh gcc musl-dev npm nodejs
 
 WORKDIR /opt/opencellid
@@ -17,8 +19,6 @@ RUN npm install
 
 #RUN rm /opt/opencellid/sqlite/oci_cells.sqlite
 #RUN cat /opt/opencellid/schema.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite
-
-
 
 CMD ["tail", "-f", "/dev/null"]
 #CMD ["/usr/bin/env", "node", "cell-geolocation.js"]
