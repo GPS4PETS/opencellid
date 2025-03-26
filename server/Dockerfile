@@ -17,8 +17,6 @@ RUN wget https://github.com/GPS4PETS/opencellid/archive/refs/tags/main.tar.gz \
 
 RUN npm install
 
-#RUN rm /opt/opencellid/sqlite/oci_cells.sqlite
-#RUN cat /opt/opencellid/schema.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite
+CMD ["cat /opt/opencellid/schema.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite"]
 
-#CMD ["tail", "-f", "/dev/null"]
 CMD ["/usr/bin/env", "node", "cell-geolocation.js"]
