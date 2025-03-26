@@ -6,3 +6,4 @@ server/*.csv
 server/*.csv.gz
 server/*.sqlite
 server/*.so
+*.swp
