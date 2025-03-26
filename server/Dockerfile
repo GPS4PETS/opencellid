@@ -9,11 +9,11 @@ WORKDIR /opt/opencellid
 RUN wget -O extension-functions.c https://www.sqlite.org/contrib/download/extension-functions.c?get=25 
  && gcc -fPIC -lm -shared extension-functions.c -o libsqlitefunctions.so
 
-RUN wget https://github.com/GPS4PETS/opencellid-server/archive/refs/tags/main.tar.gz \
+RUN wget https://github.com/GPS4PETS/opencellid/archive/refs/tags/main.tar.gz \
  && tar -xvf main.tar.gz \
- && mv opencellid-server-main/data/* /opt/opencellid/. \
+ && mv opencellid-main/server/data/* /opt/opencellid/. \
  && rm main.tar.gz \
- && rm -rf opencellid-server-main 
+ && rm -rf opencellid-main 
 
 RUN npm install
 
