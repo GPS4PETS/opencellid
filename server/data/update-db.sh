@@ -9,8 +9,8 @@ wget -O /opt/opencellid/oci_cells.csv.gz "https://download.unwiredlabs.com/ocid/
 echo "UNPACK"
 gzip -d /opt/opencellid/oci_cells.csv.gz 
 
-echo "last update: " > /opt/opencellid/update.html
-date >> /opt/opencellid/update.html
+echo "last update: " > /opt/opencellid/common/update.html
+date >> /opt/opencellid/common/update.html
 
 date
 echo "CAT IMPORT"
@@ -18,10 +18,6 @@ cat /opt/opencellid/oci_import.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sq
 date
 echo "CAT CLEANUP"
 cat /opt/opencellid/oci_cells-cleanup.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite
-
-date
-echo "SCP UPDATE.HTML"
-scp /opt/opencellid/update.html root@192.168.88.238:/var/www/html/opencellid.gps4pets.de/update.html
 
 date
 echo "END"

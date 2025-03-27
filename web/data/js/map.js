@@ -146,7 +146,7 @@ function goToCell(e) {
 function hideInfoBox(duration) {
     setTimeout(function() {
         infoBox.innerHTML = 'System OK';
-        $( "#infoBox" ).load( "update.html" );
+        $( "#infoBox" ).load( "update/update.html" );
     }, duration);
 }
 
