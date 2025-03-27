@@ -4,7 +4,7 @@ EXPOSE 80
 
 RUN apk update && apk add apache2
 
-RUN echo "V1.0"
+RUN echo "V1.1"
 
 WORKDIR /var/www/localhost/htdocs
 
