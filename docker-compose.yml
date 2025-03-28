@@ -28,7 +28,7 @@ services:
     ports:
       - 8686:8080
     healthcheck:
-      test: "curl -f http://localhost"
+      test: "curl -f http://localhost:8080"
     volumes:
       - /opt/opencellid/server/sqlite:/data
       
