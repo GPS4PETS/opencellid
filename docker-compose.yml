@@ -14,6 +14,8 @@ services:
       - /opt/opencellid/common:/opt/opencellid/common
     ports:
       - 5265:5265
+    healthcheck:
+      test: "curl -f http://localhost:5265"
     networks:
       - n7m_osm_bridge
       
