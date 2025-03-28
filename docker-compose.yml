@@ -12,11 +12,26 @@ services:
     volumes:
       - /opt/opencellid/server/sqlite:/opt/opencellid/sqlite
       - /opt/opencellid/common:/opt/opencellid/common
-
     ports:
       - 5265:5265
     networks:
       - n7m_osm_bridge
+      
+  opencellid-sqlite-admin:
+    build:
+      context: /opt/opencellid/sqlite-admin/
+      dockerfile: /opt/opencellid/sqlite-admin/Dockerfile
+    image: gps4pets/opencellid-sqlite-admin
+    env_file:
+      - stack.env
+    container_name: opencellid-sqlite-admin
+    ports:
+      - 8686:8080
+    healthcheck:
+      test: "curl -f http://localhost"
+    volumes:
+      - /opt/opencellid/server/sqlite:/data
+      
   opencellid-web:
     build: 
       context: /opt/opencellid/web/
@@ -31,6 +46,8 @@ services:
       - /opt/opencellid/common:/var/www/localhost/htdocs/update
     ports:
       - 8585:80
+    healthcheck:
+      test: "curl -f http://localhost"
     networks:
       - n7m_osm_bridge
   
