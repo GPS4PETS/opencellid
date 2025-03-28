@@ -15,7 +15,7 @@ services:
     ports:
       - 5265:5265
     healthcheck:
-      test: "curl -f http://localhost:5265"
+      test: "curl -f http://localhost:5265/api/?mcc=262&mnc=3&lac=11891&cell_id=2721818"
     networks:
       - n7m_osm_bridge
       
