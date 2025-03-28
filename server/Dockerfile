@@ -2,7 +2,7 @@ FROM alpine:latest
 
 EXPOSE 5265
 
-RUN apk update && apk add sqlite sqlite-dev openssh gcc musl-dev npm nodejs
+RUN apk update && apk add sqlite sqlite-dev openssh gcc musl-dev curl npm nodejs
 
 WORKDIR /opt/opencellid
 RUN echo "V1.1"
