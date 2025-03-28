@@ -2,7 +2,7 @@ FROM alpine:latest
 
 EXPOSE 80
 
-RUN apk update && apk add apache2
+RUN apk update && apk add apache2 curl
 
 RUN echo "V1.1"
 
