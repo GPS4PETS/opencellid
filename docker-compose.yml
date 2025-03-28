@@ -1,4 +1,4 @@
-ces:
+services:
   opencellid-server:
     build: 
       context: /opt/opencellid/server/
