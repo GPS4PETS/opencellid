@@ -5,11 +5,14 @@ ces:
       dockerfile: /opt/opencellid/server/Dockerfile
     image: gps4pets/opencellid-server
     container_name: opencellid-server
+    env_file:
+      - stack.env
     pull_policy: build
     restart: always
     volumes:
       - /opt/opencellid/server/sqlite:/opt/opencellid/sqlite
       - /opt/opencellid/common:/opt/opencellid/common
+
     ports:
       - 5265:5265
     networks:
@@ -20,6 +23,8 @@ ces:
       dockerfile: /opt/opencellid/web/Dockerfile
     image: gps4pets/opencellid-web
     container_name: opencellid-web
+    env_file:
+      - stack.env
     pull_policy: build
     restart: always
     volumes: 
