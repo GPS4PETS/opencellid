@@ -15,9 +15,6 @@ date >> /opt/opencellid/common/update.html
 date
 echo "CAT IMPORT"
 cat /opt/opencellid/oci_import.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite
-date
-echo "CAT CLEANUP"
-cat /opt/opencellid/oci_cells-cleanup.sql | sqlite3 /opt/opencellid/sqlite/oci_cells.sqlite
 
 date
 echo "END"
